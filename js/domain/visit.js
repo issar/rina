@@ -15,6 +15,13 @@ export function startVisit(S, now = Date.now()) {
   };
 }
 
+/** ביטול ביקור באמצע, בלי לשמור את מה שהוזן בשלבים */
+export function cancelVisit(S, now = Date.now()) {
+  if (!S.visit) return;
+  addLog(S, 'visit', 'ביקור בוטל באמצע', now);
+  S.visit = null;
+}
+
 export function setPos(S, pos) {
   if (S.visit) S.visit.pos = pos;
 }

@@ -1,7 +1,9 @@
 // מסך הבית: ברכה, רק מה שדחוף, וכפתור אחד גדול להתחלה.
 // כל השאר (טיפולים, פרויקטים, היסטוריה, הגדרות) נמצא במסך "עוד".
-import { state } from '../core/store.js';
-import { btn, navBtn } from '../core/ui.js';
+import { state, save } from '../core/store.js';
+import { render } from '../core/router.js';
+import { btn, navBtn, ask } from '../core/ui.js';
+import { cancelVisit } from '../domain/visit.js';
 import { openItemsCard, anomalyCard, engineCard, fuelCard } from './widgets.js';
 import { serviceInfo } from '../domain/engine.js';
 
@@ -19,7 +21,8 @@ function home() {
     return {
       title: 'רינה ⛵',
       html: `<p class="step-q">${greeting()}!<br>אתה באמצע ביקור בסירה.</p>
-        ${btn('resumeVisit', 'ממשיכים מאיפה שעצרנו', { cls: 'ok', ico: '➜' })}`,
+        ${btn('resumeVisit', 'ממשיכים מאיפה שעצרנו', { cls: 'ok', ico: '➜' })}
+        ${btn('cancelVisit', 'לבטל את הביקור ולהתחיל מחדש', { cls: 'secondary small' })}`,
     };
   }
   const si = serviceInfo(S);
@@ -45,4 +48,12 @@ function more() {
   };
 }
 
-export default { screens: { home, more }, actions: {} };
+const actions = {
+  cancelVisit() {
+    if (!ask('לבטל את הביקור? מה שסומן בו לא יישמר.')) return;
+    cancelVisit(state());
+    save(); render();
+  },
+};
+
+export default { screens: { home, more }, actions };

@@ -1,5 +1,5 @@
 // הגדרות: שעות מנוע, ספי דלק, עריכת רשימות, גיבוי ושחזור.
-import { state, save, replaceAll, exportJson } from '../core/store.js';
+import { state, save, replaceAll, exportJson, resetAll } from '../core/store.js';
 import { goHome } from '../core/router.js';
 import { btn, esc, val, toast, ask } from '../core/ui.js';
 import { num } from '../core/util.js';
@@ -35,7 +35,10 @@ function settings() {
       <p class="muted">הנתונים נשמרים רק בטלפון הזה. כדאי לשמור גיבוי מדי פעם.</p>
       ${btn('exportData', 'שמור קובץ גיבוי', { cls: 'secondary', ico: '💾' })}
       ${btn('importData', 'שחזר מקובץ גיבוי', { cls: 'secondary', ico: '📂' })}
-      <input type="file" id="importFile" accept="application/json" hidden>`,
+      <input type="file" id="importFile" accept="application/json" hidden>
+      <h2>להתחיל מאפס</h2>
+      <p class="muted">מוחק את כל מה שהוזן: היסטוריה, טיפולים, פרויקטים ושעות. אי אפשר לבטל.</p>
+      ${btn('resetAll', 'למחוק הכול ולהתחיל מחדש', { cls: 'danger small', ico: '🗑' })}`,
   };
 }
 
@@ -50,6 +53,11 @@ const actions = {
     S.settings.fuelHard = num(val('setHard')) ?? 110;
     setLists(S, { pre: val('setPre'), post: val('setPost'), close: val('setClose') });
     save(); toast('נשמר');
+  },
+  resetAll() {
+    if (!ask('למחוק את כל הנתונים ולהתחיל מאפס? אי אפשר לבטל את זה.')) return;
+    resetAll();
+    goHome(); toast('הכול נמחק. מתחילים מחדש');
   },
   exportData() {
     const blob = new Blob([exportJson()], { type: 'application/json' });

@@ -32,4 +32,10 @@ export function replaceAll(data) {
   save();
 }
 
+/** מחיקת כל הנתונים וחזרה להתחלה */
+export function resetAll() {
+  current = defaultState();
+  save();
+}
+
 export function exportJson() { return JSON.stringify(current, null, 1); }
