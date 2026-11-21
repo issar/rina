@@ -6,8 +6,35 @@ import { markFueled, setHours } from './engine.js';
 export const CHECK_LISTS = ['pre', 'post', 'close'];
 
 export function startVisit(S, now = Date.now()) {
-  S.visit = { started: now, work: false, sail: false, pre: {}, post: {}, close: {}, fueled: false, anomaly: null };
+  S.visit = {
+    started: now, work: false, sail: false,
+    pre: {}, post: {}, close: {},
+    fueled: false, anomaly: null,
+    pos: null,     // השלב הנוכחי במסלול {key, i}, כדי להמשיך מאותו מקום אם האפליקציה נסגרה
+    draft: {},     // מה שהוזן בשלבים ועוד לא נשמר: hours, summary, next
+  };
 }
+
+export function setPos(S, pos) {
+  if (S.visit) S.visit.pos = pos;
+}
+
+export function setDraft(S, key, value) {
+  if (!S.visit) return;
+  S.visit.draft = { ...(S.visit.draft || {}), [key]: value };
+}
+
+export function setFueled(S, value) {
+  if (S.visit) S.visit.fueled = !!value;
+}
+
+export function setCheck(S, list, index, value) {
+  if (!S.visit || !CHECK_LISTS.includes(list)) return;
+  S.visit[list][index] = !!value;
+}
+
+/** כמה סעיפים לא סומנו באזור אחד של רשימת הסגירה */
+export const uncheckedInGroup = (S, group) => group.items.filter((x) => !S.visit?.close?.[x.i]).length;
 
 export function toggleActivity(S, key) {
   if (!S.visit || !['work', 'sail'].includes(key)) return;

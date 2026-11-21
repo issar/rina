@@ -46,6 +46,7 @@ export function render({ keepFields = true } = {}) {
   els.back.hidden = stack.length <= 1;
   els.app.innerHTML = out.html;
   restoreFields(els.app, keep);
+  if (out.after) out.after(); // מסך יכול למלא שדות אחרי שהוצג
   lastRendered = cur;
 }
 

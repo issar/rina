@@ -1,31 +1,48 @@
-// מסך הבית.
+// מסך הבית: ברכה, רק מה שדחוף, וכפתור אחד גדול להתחלה.
+// כל השאר (טיפולים, פרויקטים, היסטוריה, הגדרות) נמצא במסך "עוד".
 import { state } from '../core/store.js';
 import { btn, navBtn } from '../core/ui.js';
-import { openItemsCard, anomalyCard, dangersCard, engineCard, fuelCard } from './widgets.js';
+import { openItemsCard, anomalyCard, engineCard, fuelCard } from './widgets.js';
+import { serviceInfo } from '../domain/engine.js';
+
+function greeting() {
+  const h = new Date().getHours();
+  if (h < 5) return 'לילה טוב';
+  if (h < 12) return 'בוקר טוב';
+  if (h < 17) return 'צהריים טובים';
+  return 'ערב טוב';
+}
 
 function home() {
   const S = state();
+  if (S.visit) {
+    return {
+      title: 'רינה ⛵',
+      html: `<p class="step-q">${greeting()}!<br>אתה באמצע ביקור בסירה.</p>
+        ${btn('resumeVisit', 'ממשיכים מאיפה שעצרנו', { cls: 'ok', ico: '➜' })}`,
+    };
+  }
+  const si = serviceInfo(S);
+  // במסך הבית מציגים רק מה שדורש תשומת לב
+  const urgent = `${openItemsCard(S)}${anomalyCard(S)}${si && si.level !== 'good' ? engineCard(S) : ''}${fuelCard(S)}${si ? '' : engineCard(S)}`;
   return {
     title: 'רינה ⛵',
-    html: `
-      ${openItemsCard(S)}
-      ${anomalyCard(S)}
-      ${dangersCard(S)}
-      ${engineCard(S)}
-      ${fuelCard(S)}
-      ${S.visit
-        ? navBtn('today', 'המשך ביקור בסירה', { cls: 'ok', ico: '⛵' })
-        : btn('arrive', 'הגעתי לסירה', { ico: '⛵' })}
-      ${navBtn('bring', `מה להביא לסירה${S.bring.length ? ` (${S.bring.length})` : ''}`, { cls: 'secondary', ico: '🧳' })}
-      <div class="row">
-        ${navBtn('services', 'טיפולים', { cls: 'secondary', ico: '🛠' })}
-        ${navBtn('projects', 'פרויקטים', { cls: 'secondary', ico: '📋' })}
-      </div>
-      <div class="row">
-        ${navBtn('history', 'היסטוריה', { cls: 'secondary', ico: '📖' })}
-        ${navBtn('settings', 'הגדרות', { cls: 'secondary', ico: '⚙️' })}
-      </div>`,
+    html: `<p class="step-q">${greeting()}!<br>מה עושים היום?</p>
+      ${btn('startVisit', 'הגעתי לסירה', { ico: '⛵' })}
+      ${navBtn('bring', `מתכונן בבית: מה להביא${S.bring.length ? ` (${S.bring.length})` : ''}`, { cls: 'secondary', ico: '🧳' })}
+      ${urgent}
+      ${navBtn('more', 'עוד אפשרויות', { cls: 'secondary small', ico: '☰' })}`,
   };
 }
 
-export default { screens: { home }, actions: {} };
+function more() {
+  return {
+    title: 'עוד אפשרויות',
+    html: `${navBtn('services', 'טיפולים', { cls: 'secondary', ico: '🛠' })}
+      ${navBtn('projects', 'פרויקטים', { cls: 'secondary', ico: '📋' })}
+      ${navBtn('history', 'היסטוריה', { cls: 'secondary', ico: '📖' })}
+      ${navBtn('settings', 'הגדרות וגיבוי', { cls: 'secondary', ico: '⚙️' })}`,
+  };
+}
+
+export default { screens: { home, more }, actions: {} };
