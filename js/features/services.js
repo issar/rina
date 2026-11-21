@@ -76,8 +76,8 @@ const actions = {
     });
     save(); back(); toast('הטיפול נשמר');
   },
-  deleteService(d) {
-    if (!ask('למחוק את סוג הטיפול?')) return;
+  async deleteService(d) {
+    if (!(await ask('למחוק את סוג הטיפול?', { yes: 'כן, למחוק', danger: true }))) return;
     deleteServiceType(state(), d.id);
     save(); back();
   },

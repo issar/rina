@@ -157,6 +157,17 @@ textarea { min-height: 120px; resize: vertical; }
 .log-entry { background: #fff; border-right: 6px solid var(--navy); border-radius: 10px; padding: 12px 14px; margin: 10px 0; }
 .log-entry .when { font-size: .85rem; color: var(--muted); }
 
+#dialog {
+  position: fixed; inset: 0; z-index: 30;
+  background: rgba(0, 0, 0, .55);
+  display: flex; align-items: center; justify-content: center; padding: 16px;
+}
+.dialog-box {
+  background: #fff; border-radius: var(--radius); padding: 22px 18px;
+  width: 100%; max-width: 480px; box-shadow: 0 10px 30px rgba(0,0,0,.35);
+}
+.dialog-msg { font-size: 1.25rem; font-weight: 800; margin: 0 0 14px; }
+
 #toast {
   position: fixed; bottom: 24px; left: 16px; right: 16px; z-index: 20;
   background: #111; color: #fff; padding: 18px; border-radius: 14px;

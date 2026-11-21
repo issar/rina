@@ -230,12 +230,12 @@ const actions = {
     go('flow', S.visit.pos || firstStep(S));
   },
 
-  flowNext(d) {
+  async flowNext(d) {
     const S = state();
     if (d.save === 'hours') {
       const h = num(val('hoursIn'));
       if (h == null) return toast('הקלד מספר, או לחץ "המנוע לא הונע היום"');
-      if (isHoursDecrease(S, h) && !ask(`המספר ${h} קטן מהקודם (${S.hours}). זה נכון?`)) return;
+      if (isHoursDecrease(S, h) && !(await ask(`המספר ${h} קטן מהקודם (${S.hours}). זה נכון?`, { yes: 'כן, זה נכון', no: 'לא, אתקן' }))) return;
       setDraft(S, 'hours', h);
     }
     if (d.save === 'summary') {

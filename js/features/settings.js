@@ -54,8 +54,8 @@ const actions = {
     setLists(S, { pre: val('setPre'), post: val('setPost'), close: val('setClose') });
     save(); toast('נשמר');
   },
-  resetAll() {
-    if (!ask('למחוק את כל הנתונים ולהתחיל מאפס? אי אפשר לבטל את זה.')) return;
+  async resetAll() {
+    if (!(await ask('למחוק את כל הנתונים ולהתחיל מאפס? אי אפשר לבטל את זה.', { yes: 'כן, למחוק הכול', danger: true }))) return;
     resetAll();
     goHome(); toast('הכול נמחק. מתחילים מחדש');
   },
@@ -75,7 +75,7 @@ const actions = {
       try {
         const data = JSON.parse(await file.text());
         if (!data || typeof data.v !== 'number') throw new Error('bad');
-        if (!ask('השחזור יחליף את כל הנתונים הנוכחיים. להמשיך?')) return;
+        if (!(await ask('השחזור יחליף את כל הנתונים הנוכחיים. להמשיך?', { yes: 'כן, לשחזר', danger: true }))) return;
         replaceAll(data);
         goHome(); toast('הנתונים שוחזרו');
       } catch (e) { toast('הקובץ לא תקין'); }

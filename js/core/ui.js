@@ -43,4 +43,31 @@ export function toast(msg) {
   toast._t = setTimeout(() => t.classList.remove('show'), 2600);
 }
 
-export const ask = (msg) => window.confirm(msg);
+/**
+ * חלון אישור בתוך האפליקציה, עם כפתורים גדולים. מחזיר Promise<boolean>.
+ * לא משתמשים ב-window.confirm, כי יש סביבות (כמו דף מוטמע) שחוסמות אותו בשקט.
+ */
+export function ask(msg, { yes = 'כן', no = 'ביטול', danger = false } = {}) {
+  return new Promise((resolve) => {
+    const prev = document.getElementById('dialog');
+    if (prev) prev.remove();
+    const wrap = document.createElement('div');
+    wrap.id = 'dialog';
+    wrap.setAttribute('role', 'dialog');
+    wrap.setAttribute('aria-modal', 'true');
+    wrap.innerHTML = `<div class="dialog-box">
+        <p class="dialog-msg">${esc(msg)}</p>
+        <button class="btn ${danger ? 'danger' : 'ok'}" data-r="1">${esc(yes)}</button>
+        <button class="btn secondary" data-r="0">${esc(no)}</button>
+      </div>`;
+    const done = (r) => { wrap.remove(); resolve(r); };
+    wrap.addEventListener('click', (e) => {
+      e.stopPropagation(); // לא להפעיל פעולות של המסך שמתחת
+      const b = e.target.closest('[data-r]');
+      if (b) done(b.dataset.r === '1');
+      else if (e.target === wrap) done(false);
+    });
+    document.body.appendChild(wrap);
+    wrap.querySelector('[data-r="1"]').focus();
+  });
+}

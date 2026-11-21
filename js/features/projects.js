@@ -45,9 +45,9 @@ const actions = {
     createProject(state(), name);
     save(); render({ keepFields: false });
   },
-  finishProject(d) {
+  async finishProject(d) {
     const p = getProject(state(), d.id);
-    if (!p || !ask(`לסמן את "${p.name}" כגמור?`)) return;
+    if (!p || !(await ask(`לסמן את "${p.name}" כגמור?`))) return;
     finishProject(state(), d.id);
     save(); back();
   },

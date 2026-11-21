@@ -49,8 +49,8 @@ function more() {
 }
 
 const actions = {
-  cancelVisit() {
-    if (!ask('לבטל את הביקור? מה שסומן בו לא יישמר.')) return;
+  async cancelVisit() {
+    if (!(await ask('לבטל את הביקור? מה שסומן בו לא יישמר.', { yes: 'כן, לבטל', no: 'לא, להמשיך בביקור', danger: true }))) return;
     cancelVisit(state());
     save(); render();
   },
