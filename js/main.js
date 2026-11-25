@@ -16,8 +16,9 @@ import projects from './features/projects.js';
 import historyFeature from './features/history.js';
 import settings from './features/settings.js';
 import cloud from './features/cloud.js';
+import feedback, { initFab } from './features/feedback.js';
 
-const FEATURES = [common, home, flow, input, bring, services, projects, historyFeature, settings, cloud];
+const FEATURES = [common, home, flow, input, bring, services, projects, historyFeature, settings, cloud, feedback];
 
 setErrorHandler(toast);
 load();
@@ -28,6 +29,7 @@ for (const f of FEATURES) {
 initRouter({ app: $('#app'), title: $('#title'), back: $('#backBtn') });
 initActions();
 render();
+initFab();
 startSync({
   onRemote: () => render(),                                       // הגיעו נתונים ממכשיר אחר
   onStatus: () => { if (currentScreen() === 'cloud') render(); }, // עדכון מצב השמירה במסך הסנכרון

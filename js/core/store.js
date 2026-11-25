@@ -58,4 +58,11 @@ export function setDraftField(key, id, value) { const d = draftsObj(); (d[key] |
 export function clearDraft(key) { const d = draftsObj(); if (d[key]) { delete d[key]; writeDrafts(); } }
 export function clearAllDrafts() { drafts = {}; writeDrafts(); }
 
+// העדפות תצוגה של המכשיר הזה (למשל מיקום הכפתור המרחף). לא עולות לענן.
+const UI = 'rina-ui';
+export function getUiPref(key) { try { return (JSON.parse(localStorage.getItem(UI)) || {})[key]; } catch { return undefined; } }
+export function setUiPref(key, value) {
+  try { const o = JSON.parse(localStorage.getItem(UI)) || {}; o[key] = value; localStorage.setItem(UI, JSON.stringify(o)); } catch {}
+}
+
 export function exportJson() { return JSON.stringify(current, null, 1); }

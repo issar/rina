@@ -1,9 +1,8 @@
 // הגדרות: שעות מנוע, ספי דלק, עריכת רשימות, גיבוי ושחזור.
 import { state, save, replaceAll, exportJson, resetAll } from '../core/store.js';
-import { goHome, render, clearDraft, clearAllDrafts } from '../core/router.js';
-import { btn, esc, val, toast, ask, inputWithMic } from '../core/ui.js';
-import { num, fmtDate } from '../core/util.js';
-import { addFeedback } from '../domain/feedback.js';
+import { goHome, clearDraft, clearAllDrafts } from '../core/router.js';
+import { btn, navBtn, esc, val, toast, ask } from '../core/ui.js';
+import { num } from '../core/util.js';
 import { closeListToText, setLists } from '../domain/lists.js';
 import { setHours } from '../domain/engine.js';
 import { sync } from '../services/syncInstance.js';
@@ -34,10 +33,8 @@ function settings() {
       <textarea id="setClose" style="min-height:300px">${esc(closeListToText(S.lists.close))}</textarea>
       ${btn('saveSettings', 'שמור הגדרות', { cls: 'ok', ico: '✓' })}
       <h2>💬 הערות לשיפור ובאגים</h2>
-      <p class="muted">משהו לא עבד, חסר או מבלבל? אפשר לכתוב או ללחוץ על המיקרופון ולדבר.</p>
-      ${inputWithMic('fbIn', 'למשל: הכפתור של... לא עשה כלום', true)}
-      ${btn('sendFeedback', 'שמור הערה', { cls: 'ok', ico: '💬' })}
-      ${(S.feedback || []).slice(0, 5).map((f) => `<div class="log-entry"><span class="when">${fmtDate(f.ts)}</span><br>${esc(f.text)}</div>`).join('')}
+      <p class="muted">משהו לא עבד, חסר או מבלבל? אפשר גם ללחוץ בכל מסך על העיגול 💬.</p>
+      ${navBtn('feedback', 'לכתוב או להקליט הערה', { cls: 'secondary', ico: '💬' })}
       <h2>גיבוי</h2>
       <p class="muted">${sync.status().signedIn
         ? 'הנתונים נשמרים אוטומטית גם בענן. קובץ גיבוי הוא עותק נוסף שנשמר בתיקיית ההורדות, למקרה הצורך.'
@@ -60,12 +57,6 @@ const actions = {
     S.settings.fuelHard = num(val('setHard')) ?? 110;
     setLists(S, { pre: val('setPre'), post: val('setPost'), close: val('setClose') });
     save(); clearDraft(); toast('נשמר');
-  },
-  sendFeedback() {
-    const item = addFeedback(state(), val('fbIn'));
-    if (!item) return toast('לא נכתב כלום');
-    save(); render({ keepFields: false });
-    toast('תודה! ההערה נשמרה');
   },
   async resetAll() {
     // שני אישורים, כי עם הסנכרון המחיקה עוברת לכל המכשירים

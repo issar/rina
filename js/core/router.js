@@ -67,6 +67,7 @@ export function render({ keepFields = true } = {}) {
   if (!keepFields) clearDraftKey(draftKey(cur));
   const keep = keepFields && cur === lastRendered ? collectFields(els.app) : {};
   backHome = !!out.backHome;
+  document.body.dataset.screen = cur.name; // לעיצוב לפי מסך (למשל להסתיר את הכפתור המרחף)
   els.title.textContent = out.title;
   els.title.parentElement.classList.toggle('brand', !!out.brand);
   els.back.hidden = stack.length <= 1;
