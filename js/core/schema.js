@@ -17,8 +17,9 @@ export function defaultState() {
     pendingDangers: null,   // {name, date, items: [{text, ok}]}
     lastAnomaly: null,      // חריג שדווח בסוף הביקור הקודם {text, date}
     projects: [],           // {id, name, done, created, notes: [{ts, text}]}
-    log: [],                // {id, ts, kind, text}
-    visit: null,            // {started, work, sail, pre{}, post{}, close{}, fueled}
+    log: [],                // {id, ts, kind, text, vid?} vid = מזהה הביקור שבו נרשם
+    logDeleted: [],         // מזהים של רישומים שנמחקו, כדי שסנכרון לא יחזיר אותם ממכשיר אחר
+    visit: null,            // {id, started, work, sail, pre{}, post{}, close{}, fueled}
     lists: {
       pre: ['ברז יניקת מי ים פתוח', 'שמן מנוע', 'נוזל קירור', 'רצועות מנוע', "בילג'"],
       post: ['מים יוצאים מהאגזוז', 'אין נורות אזהרה'],

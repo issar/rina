@@ -33,7 +33,9 @@ function settings() {
       <textarea id="setClose" style="min-height:300px">${esc(closeListToText(S.lists.close))}</textarea>
       ${btn('saveSettings', 'שמור הגדרות', { cls: 'ok', ico: '✓' })}
       <h2>גיבוי</h2>
-      <p class="muted">הנתונים נשמרים רק בטלפון הזה. כדאי לשמור גיבוי מדי פעם.</p>
+      <p class="muted">${sync.status().signedIn
+        ? 'הנתונים נשמרים אוטומטית גם בענן. קובץ גיבוי הוא עותק נוסף שנשמר בתיקיית ההורדות, למקרה הצורך.'
+        : 'כרגע הנתונים נשמרים רק בטלפון הזה. כדי שיישמרו אוטומטית, מתחברים ב"סנכרון בין מכשירים". עד אז כדאי לשמור קובץ גיבוי מדי פעם.'}</p>
       ${btn('exportData', 'שמור קובץ גיבוי', { cls: 'secondary', ico: '💾' })}
       ${btn('importData', 'שחזר מקובץ גיבוי', { cls: 'secondary', ico: '📂' })}
       <input type="file" id="importFile" accept="application/json" hidden>

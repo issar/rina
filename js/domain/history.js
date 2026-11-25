@@ -19,6 +19,34 @@ export function groupByDay(log = []) {
     .sort((a, b) => b.key.localeCompare(a.key));
 }
 
+/**
+ * קיבוץ לפי ביקורים (סשנים), מהחדש לישן.
+ * רישום עם vid שייך לביקור שלו. רישום בלי vid (מחוץ לביקור, או מלפני שהיו מזהים) מקובץ לפי יום.
+ */
+export function groupSessions(log = []) {
+  const groups = new Map();
+  for (const e of log) {
+    const key = e.vid ? `v:${e.vid}` : `d:${dayKey(e.ts)}`;
+    if (!groups.has(key)) groups.set(key, { key, visit: !!e.vid, entries: [] });
+    groups.get(key).entries.push(e);
+  }
+  return [...groups.values()]
+    .map((g) => {
+      const entries = g.entries.sort((a, b) => a.ts - b.ts);
+      return { ...g, entries, ts: entries[0].ts, end: entries[entries.length - 1].ts, summary: daySummary(entries) };
+    })
+    .sort((a, b) => b.end - a.end);
+}
+
+/** מחיקת ביקור שלם מההיסטוריה (למשל ביקור ניסיון). לא משנה שעות מנוע, טיפולים וכו'. */
+export function deleteSession(S, key) {
+  const ids = new Set(groupSessions(S.log).find((g) => g.key === key)?.entries.map((e) => e.id) || []);
+  if (!ids.size) return 0;
+  S.log = S.log.filter((e) => !ids.has(e.id));
+  S.logDeleted = [...(S.logDeleted || []), ...ids];
+  return ids.size;
+}
+
 const count = (n, one, many) => (n === 1 ? one : `${n} ${many}`);
 
 /**

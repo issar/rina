@@ -63,7 +63,8 @@ p { margin: 8px 0; }
 .row { display: flex; gap: 10px; }
 .row > * { flex: 1; min-width: 0; }
 .row .btn { flex-direction: column; gap: 2px; padding: 10px 8px; font-size: 1.05rem; }
-html, body { overflow-x: hidden; }
+/* clip ולא hidden: hidden שובר את ה-sticky של הכותרת, וכפתור החזרה נעלם בגלילה */
+html, body { overflow-x: clip; }
 
 /* כרטיסי מצב */
 .card {
@@ -159,7 +160,7 @@ textarea { min-height: 120px; resize: vertical; }
 
 /* היסטוריה לפי ימים: שורה לכל יום, נפתחת בלחיצה */
 .day { background: #fff; border: 2px solid var(--navy); border-radius: 14px; margin: 12px 0; }
-.day summary { list-style: none; cursor: pointer; padding: 14px 16px; min-height: 76px; display: flex; flex-direction: column; justify-content: center; position: relative; padding-left: 44px; }
+.day summary { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; list-style: none; cursor: pointer; padding: 14px 16px; min-height: 76px; display: flex; flex-direction: column; justify-content: center; position: relative; padding-left: 44px; }
 .day summary::-webkit-details-marker { display: none; }
 .day summary::after { content: '▾'; position: absolute; left: 16px; top: 50%; transform: translateY(-50%); font-size: 1.4rem; color: var(--navy); }
 .day[open] summary::after { content: '▴'; }

@@ -19,7 +19,9 @@ export function mergeLogs(a = [], b = []) {
 /** התנגשות: שני מכשירים שינו בלי לראות זה את זה. המכשיר הנוכחי קובע, והיומן מאוחד. */
 export function resolveConflict(local, remote) {
   const out = JSON.parse(JSON.stringify(local));
-  out.log = mergeLogs(local.log, remote?.log);
+  const deleted = new Set([...(local.logDeleted || []), ...(remote?.logDeleted || [])]);
+  out.log = mergeLogs(local.log, remote?.log).filter((e) => !deleted.has(e.id)); // מה שנמחק לא חוזר
+  out.logDeleted = [...deleted];
   return out;
 }
 

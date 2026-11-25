@@ -2,11 +2,13 @@
 import { addLog } from './log.js';
 import { addBring } from './bring.js';
 import { markFueled, setHours } from './engine.js';
+import { uid } from '../core/util.js';
 
 export const CHECK_LISTS = ['pre', 'post', 'close'];
 
 export function startVisit(S, now = Date.now()) {
   S.visit = {
+    id: uid(),     // כל מה שנרשם בהיסטוריה בזמן הביקור מקבל את המזהה הזה
     started: now, work: false, sail: false,
     pre: {}, post: {}, close: {},
     fueled: false, anomaly: null,
