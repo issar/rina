@@ -39,9 +39,7 @@ function settings() {
       ${btn('exportData', 'שמור קובץ גיבוי', { cls: 'secondary', ico: '💾' })}
       ${btn('importData', 'שחזר מקובץ גיבוי', { cls: 'secondary', ico: '📂' })}
       <input type="file" id="importFile" accept="application/json" hidden>
-      <h2>להתחיל מאפס</h2>
-      <p class="muted">מוחק את כל מה שהוזן: היסטוריה, טיפולים, פרויקטים ושעות. אי אפשר לבטל.</p>
-      ${btn('resetAll', 'למחוק הכול ולהתחיל מחדש', { cls: 'danger small', ico: '🗑' })}`,
+      ${btn('resetAll', 'מחיקת כל הנתונים', { cls: 'tiny-danger', ico: '🗑' })}`,
   };
 }
 
@@ -58,7 +56,9 @@ const actions = {
     save(); clearDraft(); toast('נשמר');
   },
   async resetAll() {
-    if (!(await ask('למחוק את כל הנתונים ולהתחיל מאפס? אי אפשר לבטל את זה.', { yes: 'כן, למחוק הכול', danger: true }))) return;
+    // שני אישורים, כי עם הסנכרון המחיקה עוברת לכל המכשירים
+    if (!(await ask('אתה בטוח? זה מוחק את כל מה שהוזן: היסטוריה, טיפולים, פרויקטים ושעות מנוע.', { yes: 'כן, אני בטוח', no: 'לא, ביטול', danger: true }))) return;
+    if (!(await ask('אישור אחרון: המחיקה תעבור גם לכל המכשירים המחוברים. למחוק הכול?', { yes: 'למחוק הכול', no: 'לא, ביטול', danger: true }))) return;
     await sync.archiveCurrent('before-reset'); // עותק בענן, למקרה שהאיפוס היה טעות
     resetAll();
     clearAllDrafts();
