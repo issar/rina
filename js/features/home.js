@@ -17,9 +17,19 @@ function greeting() {
 }
 
 // תמונה אישית בראש מסך הבית בלבד. בשאר המסכים אין תמונה, כדי שהכפתורים והרשימות יישארו קריאים.
-const hero = () => `<div class="hero" aria-hidden="true">
-    <img src="img/hero.jpg" alt="">
-    <div class="hero-text"><span class="hero-hello">${greeting()}, יוסי!</span><span class="hero-boat">⛵ יאכטה רינה</span></div>
+// מצב ברז יניקת מי הים מופיע על התמונה, כדי שיראו אותו מיד בלי לגלול
+function valveBadge(S) {
+  const v = S.open.find((o) => o.valve);
+  return v
+    ? `<div class="hero-valve closed" role="alert"><span>⛔ ברז יניקת מי ים סגור!</span>
+        ${btn('resolveOpen', 'פתחתי', { cls: 'ok small', data: { id: v.id } })}</div>`
+    : '<div class="hero-valve open"><span>✓ ברז יניקת מי ים פתוח</span></div>';
+}
+
+const hero = (S) => `<div class="hero">
+    <img src="img/hero.jpg" alt="" aria-hidden="true">
+    ${valveBadge(S)}
+    <div class="hero-text" aria-hidden="true"><span class="hero-hello">${greeting()}, יוסי!</span><span class="hero-boat">⛵ יאכטה רינה</span></div>
   </div>`;
 
 function home() {
@@ -29,10 +39,10 @@ function home() {
       title: 'RINA',
       brand: true,
       html: S.visit.pos?.key === 'sailing'
-        ? `${hero()}<p class="step-q">אתה באמצע הפלגה.</p>
+        ? `${hero(S)}<p class="step-q">אתה באמצע הפלגה.</p>
           ${btn('resumeVisit', 'חזרה להפלגה', { cls: 'ok', ico: '⛵' })}
           ${navBtn('more', 'עוד אפשרויות (טיפולים, היסטוריה...)', { cls: 'secondary small', ico: '☰' })}`
-        : `${hero()}<p class="step-q">אתה באמצע ביקור בסירה.</p>
+        : `${hero(S)}<p class="step-q">אתה באמצע ביקור בסירה.</p>
           ${btn('resumeVisit', 'ממשיכים מאיפה שעצרנו', { cls: 'ok', ico: '➜' })}
           ${navBtn('more', 'עוד אפשרויות', { cls: 'secondary small', ico: '☰' })}
           ${btn('cancelVisit', 'לבטל את הביקור ולהתחיל מחדש', { cls: 'secondary small' })}`,
@@ -40,11 +50,11 @@ function home() {
   }
   const si = serviceInfo(S);
   // במסך הבית מציגים רק מה שדורש תשומת לב
-  const urgent = `${openItemsCard(S)}${anomalyCard(S)}${si && si.level !== 'good' ? engineCard(S) : ''}${fuelCard(S)}${si ? '' : engineCard(S)}`;
+  const urgent = `${openItemsCard(S, undefined, { skipValve: true })}${anomalyCard(S)}${si && si.level !== 'good' ? engineCard(S) : ''}${fuelCard(S)}${si ? '' : engineCard(S)}`;
   return {
     title: 'RINA',
     brand: true, // כותרת ממורכזת עם סירה בכל צד
-    html: `${hero()}<p class="step-q">מה עושים היום?</p>
+    html: `${hero(S)}<p class="step-q">מה עושים היום?</p>
       ${btn('startVisit', 'הגעתי לסירה', { ico: '⛵' })}
       ${navBtn('bring', `מתכונן בבית: מה להביא${S.bring.length ? ` (${S.bring.length})` : ''}`, { cls: 'secondary', ico: '🧳' })}
       ${urgent}

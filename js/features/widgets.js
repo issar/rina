@@ -4,9 +4,11 @@ import { fmtDate } from '../core/util.js';
 import { serviceInfo, fuelInfo } from '../domain/engine.js';
 import { happenedThisVisit } from '../domain/visit.js';
 
-export function openItemsCard(S, title = 'שים לב! נשארו דברים פתוחים') {
-  if (!S.open.length) return '';
-  const rows = S.open.map((o) => `<div class="item">
+/** skipValve: במסך הבית הברז מוצג על התמונה, ולכן לא חוזרים עליו בכרטיס */
+export function openItemsCard(S, title = 'שים לב! נשארו דברים פתוחים', { skipValve = false } = {}) {
+  const items = skipValve ? S.open.filter((o) => !o.valve) : S.open;
+  if (!items.length) return '';
+  const rows = items.map((o) => `<div class="item">
       <span class="txt">${esc(o.text)}<br><span class="muted">מ${fmtDate(o.created)}</span></span>
       ${btn('resolveOpen', o.valve ? 'פתחתי' : 'טופל', { cls: 'ok', data: { id: o.id } })}
     </div>`).join('');
