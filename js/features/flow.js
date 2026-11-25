@@ -29,6 +29,27 @@ const bigQuestion = (text) => `<p class="step-q">${text}</p>`;
 const choice = (action, items) => `<div class="choice">${items.map((it) =>
   `<button class="${it.cls || ''}" data-a="${action}" data-v="${it.v}"><span class="ico">${it.ico}</span>${it.label}</button>`).join('')}</div>`;
 
+/** איור למסך ההפלגה: שמש, סירת מפרש שמתנדנדת וגלים שזזים (התנועה נעצרת למי שביקש פחות אנימציה) */
+const SAIL_SVG = `<svg viewBox="0 0 360 220" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bfe3f5"/><stop offset="1" stop-color="#f4f1ea"/></linearGradient>
+    <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a7fb0"/><stop offset="1" stop-color="#0b3d5c"/></linearGradient>
+  </defs>
+  <rect width="360" height="220" fill="url(#sky)"/>
+  <circle cx="290" cy="58" r="30" fill="#ffd36b"/><circle cx="290" cy="58" r="42" fill="#ffd36b" opacity=".25"/>
+  <g class="boat">
+    <path d="M118 150 L232 150 L216 170 L134 170 Z" fill="#ffffff" stroke="#0b3d5c" stroke-width="3" stroke-linejoin="round"/>
+    <line x1="176" y1="58" x2="176" y2="150" stroke="#0b3d5c" stroke-width="4" stroke-linecap="round"/>
+    <path d="M180 62 L180 144 L228 144 Z" fill="#ffffff" stroke="#0b3d5c" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M172 70 L172 144 L130 144 Z" fill="#e8f2f8" stroke="#0b3d5c" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M176 58 L196 64 L176 70 Z" fill="#b3121b"/>
+  </g>
+  <g class="waves">
+    <path d="M-40 168 q20 -10 40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 V220 H-40 Z" fill="url(#sea)"/>
+    <path class="w2" d="M-40 184 q20 -8 40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 V220 H-40 Z" fill="#0b3d5c" opacity=".55"/>
+  </g>
+</svg>`;
+
 /* ---------- השלבים ---------- */
 
 const STEP_VIEWS = {
@@ -87,10 +108,14 @@ const STEP_VIEWS = {
 
   post: (S, pos) => checkStep(S, pos, 'post', 'מיד אחרי ההתנעה'),
 
+  // מסך מעבר: סוף שלב היציאה. נשאר פתוח כל זמן ההפלגה, ובחזרה לוחצים על הכפתור האדום
   sailing: () => ({
-    title: 'הפלגה נעימה! ⛵',
-    html: `${bigQuestion('כשחוזרים לרציף, לוחצים כאן:')}
-      ${nextBtn('חזרנו מההפלגה', { cls: 'ok' })}`,
+    title: 'בים ⛵',
+    html: `<div class="sail-scene" aria-hidden="true">${SAIL_SVG}</div>
+      <p class="sail-title">הפלגה נעימה!</p>
+      <p class="sail-sub">כל הבדיקות עברו. המסך הזה מחכה לך עד שתחזור.</p>
+      <div class="spacer"></div>
+      ${nextBtn('חזרתי לנמל', { cls: 'danger', ico: '⚓' })}`,
   }),
 
   openCheck: (S) => ({
@@ -105,7 +130,8 @@ const STEP_VIEWS = {
     const g = groups[pos.i];
     return {
       title: `סגירת הסירה: ${esc(g.g)}`,
-      html: `${progress(progressOf(S, pos))}
+      html: `${pos.i === 0 && S.visit.sail ? '<p class="section-kick">⚓ ברוך שובך! עכשיו סוגרים את הסירה.</p>' : ''}
+        ${progress(progressOf(S, pos))}
         ${g.items.map((x) => checkRow({ action: 'tick', data: { list: 'close', key: x.i }, text: x.t, done: S.visit.close[x.i] })).join('')}
         ${nextBtn()}
         ${checkAllBtn('close')}`,
