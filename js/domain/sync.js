@@ -22,6 +22,7 @@ export function resolveConflict(local, remote) {
   const deleted = new Set([...(local.logDeleted || []), ...(remote?.logDeleted || [])]);
   out.log = mergeLogs(local.log, remote?.log).filter((e) => !deleted.has(e.id)); // מה שנמחק לא חוזר
   out.logDeleted = [...deleted];
+  out.feedback = mergeLogs(local.feedback, remote?.feedback); // הערות משני המכשירים נשמרות
   return out;
 }
 

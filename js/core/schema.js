@@ -18,6 +18,7 @@ export function defaultState() {
     lastAnomaly: null,      // חריג שדווח בסוף הביקור הקודם {text, date}
     projects: [],           // {id, name, done, created, notes: [{ts, text}]}
     log: [],                // {id, ts, kind, text, vid?} vid = מזהה הביקור שבו נרשם
+    feedback: [],           // הערות לשיפור ובאגים מאבא {id, ts, text}. עולות לענן עם שאר הנתונים
     logDeleted: [],         // מזהים של רישומים שנמחקו, כדי שסנכרון לא יחזיר אותם ממכשיר אחר
     visit: null,            // {id, started, work, sail, pre{}, post{}, close{}, fueled}
     lists: {
