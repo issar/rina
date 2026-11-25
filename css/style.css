@@ -157,6 +157,18 @@ textarea { min-height: 120px; resize: vertical; }
 .log-entry { background: #fff; border-right: 6px solid var(--navy); border-radius: 10px; padding: 12px 14px; margin: 10px 0; }
 .log-entry .when { font-size: .85rem; color: var(--muted); }
 
+/* היסטוריה לפי ימים: שורה לכל יום, נפתחת בלחיצה */
+.day { background: #fff; border: 2px solid var(--navy); border-radius: 14px; margin: 12px 0; }
+.day summary { list-style: none; cursor: pointer; padding: 14px 16px; min-height: 76px; display: flex; flex-direction: column; justify-content: center; position: relative; padding-left: 44px; }
+.day summary::-webkit-details-marker { display: none; }
+.day summary::after { content: '▾'; position: absolute; left: 16px; top: 50%; transform: translateY(-50%); font-size: 1.4rem; color: var(--navy); }
+.day[open] summary::after { content: '▴'; }
+.day[open] summary { border-bottom: 2px solid var(--navy); }
+.day-date { font-weight: 700; }
+.day-sum { color: var(--muted); font-size: .9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.day-body { padding: 4px 10px 10px; }
+.day-body .log-entry { margin: 8px 0; border-right-width: 4px; }
+
 #dialog {
   position: fixed; inset: 0; z-index: 30;
   background: rgba(0, 0, 0, .55);
