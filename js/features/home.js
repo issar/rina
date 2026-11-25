@@ -26,7 +26,8 @@ function home() {
   const S = state();
   if (S.visit) {
     return {
-      title: 'RINA ⛵',
+      title: 'RINA',
+      brand: true,
       html: S.visit.pos?.key === 'sailing'
         ? `${hero()}<p class="step-q">אתה באמצע הפלגה.</p>
           ${btn('resumeVisit', 'חזרה להפלגה', { cls: 'ok', ico: '⛵' })}
@@ -41,7 +42,8 @@ function home() {
   // במסך הבית מציגים רק מה שדורש תשומת לב
   const urgent = `${openItemsCard(S)}${anomalyCard(S)}${si && si.level !== 'good' ? engineCard(S) : ''}${fuelCard(S)}${si ? '' : engineCard(S)}`;
   return {
-    title: 'RINA ⛵',
+    title: 'RINA',
+    brand: true, // כותרת ממורכזת עם סירה בכל צד
     html: `${hero()}<p class="step-q">מה עושים היום?</p>
       ${btn('startVisit', 'הגעתי לסירה', { ico: '⛵' })}
       ${navBtn('bring', `מתכונן בבית: מה להביא${S.bring.length ? ` (${S.bring.length})` : ''}`, { cls: 'secondary', ico: '🧳' })}

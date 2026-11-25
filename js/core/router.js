@@ -68,6 +68,7 @@ export function render({ keepFields = true } = {}) {
   const keep = keepFields && cur === lastRendered ? collectFields(els.app) : {};
   backHome = !!out.backHome;
   els.title.textContent = out.title;
+  els.title.parentElement.classList.toggle('brand', !!out.brand);
   els.back.hidden = stack.length <= 1;
   els.app.innerHTML = out.html;
   if (keepFields) restoreDraft(els.app, getDraft(draftKey(cur)));
