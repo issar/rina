@@ -42,6 +42,12 @@ export function setCheck(S, list, index, value) {
   S.visit[list][index] = !!value;
 }
 
+/** מעבר בין "בדיקה אחת בכל מסך" לבין "כל הבדיקות כרשימה" (נשמר לביקור הנוכחי) */
+export function toggleListView(S, list) {
+  if (!S.visit || !CHECK_LISTS.includes(list)) return;
+  S.visit.listView = { ...(S.visit.listView || {}), [list]: !S.visit.listView?.[list] };
+}
+
 /** "סמן הכול": מסמן את כל הסעיפים ברשימה (pre, post או close) */
 export function checkAll(S, list) {
   if (!S.visit || !CHECK_LISTS.includes(list)) return;

@@ -7,7 +7,7 @@ import { num } from '../core/util.js';
 import { openItemsCard, dangersCard, anomalyCard } from './widgets.js';
 import { firstStep, nextStep, prevStep, progressOf, stepAfter } from '../domain/flow.js';
 import {
-  startVisit, toggleActivity, setPos, setDraft, setFueled, setAnomaly, setCheck, checkAll,
+  startVisit, toggleActivity, setPos, setDraft, setFueled, setAnomaly, setCheck, checkAll, toggleListView,
   closeGroups, uncheckedCount, finishVisit,
 } from '../domain/visit.js';
 import { closeValve, openValve, isValveClosed, hasOpenItems } from '../domain/openItems.js';
@@ -208,15 +208,28 @@ const STEP_VIEWS = {
   },
 };
 
-/** מסך לבדיקה אחת: פריט גדול באמצע וכפתור "בדקתי" */
+/** מסך לבדיקה אחת: פריט גדול באמצע וכפתור "בדקתי". אפשר לעבור לתצוגה של כל הרשימה */
 function checkStep(S, pos, list, title) {
+  if (S.visit.listView?.[list]) return checkListView(S, list, title);
   const text = S.lists[list][pos.i];
   return {
     title,
     html: `${progress(progressOf(S, pos))}
       <div class="step-item">${esc(text)}</div>
       ${btn('flowCheck', 'בדקתי ✓', { cls: 'ok', data: { list, key: pos.i } })}
-      ${checkAllBtn(list)}`,
+      ${checkAllBtn(list)}
+      ${btn('toggleListView', 'לראות את כל הבדיקות כרשימה', { cls: 'secondary small', ico: '☰', data: { list } })}`,
+  };
+}
+
+/** כל הבדיקות במסך אחד, מסמנים בלחיצה וממשיכים */
+function checkListView(S, list, title) {
+  return {
+    title,
+    html: `${S.lists[list].map((t, i) => checkRow({ action: 'tick', data: { list, key: i }, text: t, done: S.visit[list][i] })).join('')}
+      ${btn('flowListDone', 'המשך', { ico: '➜', data: { list } })}
+      ${checkAllBtn(list)}
+      ${btn('toggleListView', 'לחזור לבדיקה אחת בכל מסך', { cls: 'secondary small', ico: '↩', data: { list } })}`,
   };
 }
 
@@ -286,6 +299,19 @@ const actions = {
   },
   flowSkipHours() { setDraft(state(), 'hours', null); goNext(); },
   flowCheck(d) { setCheck(state(), d.list, Number(d.key), true); goNext(); },
+  toggleListView(d) {
+    toggleListView(state(), d.list);
+    save(); render(); window.scrollTo(0, 0);
+  },
+  async flowListDone(d) {
+    const S = state();
+    const left = uncheckedCount(S, d.list);
+    if (left && !(await ask(`נשארו ${left} בדיקות לא מסומנות. להמשיך בכל זאת?`, { yes: 'כן, להמשיך', no: 'לא, אסמן' }))) return;
+    const next = stepAfter(S, S.visit.pos.key);
+    if (!next) return;
+    setPos(S, next); save();
+    go('flow', next);
+  },
   flowPrev() {
     const S = state();
     const prev = prevStep(S, S.visit.pos);
