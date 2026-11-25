@@ -19,11 +19,15 @@ export function registerScreens(map) {
 export function initRouter({ app, title, back }) {
   els = { app, title, back };
   back.addEventListener('click', () => history.back());
-  app.addEventListener('input', (e) => {
+  const keepDraft = (e) => {
     const el = e.target;
-    if (!el.id || !el.matches('input, textarea') || el.type === 'password' || el.type === 'file') return;
+    if (!el.id || !el.isConnected || !el.matches('input, textarea') || el.type === 'password' || el.type === 'file') return;
     setDraftField(draftKey(), el.id, el.value);
-  });
+  };
+  // input בכל אות, change וגם blur ליתר ביטחון (מקלדות מסוימות בטלפון מעדכנות רק בסוף מילה)
+  app.addEventListener('input', keepDraft);
+  app.addEventListener('change', keepDraft);
+  app.addEventListener('focusout', keepDraft);
   window.addEventListener('popstate', () => { if (stack.length > 1) stack.pop(); render(); });
 }
 

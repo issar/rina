@@ -6,6 +6,7 @@ import { btn, navBtn, ask } from '../core/ui.js';
 import { cancelVisit } from '../domain/visit.js';
 import { openItemsCard, anomalyCard, engineCard, fuelCard } from './widgets.js';
 import { serviceInfo } from '../domain/engine.js';
+import { APP_VERSION } from '../version.js';
 
 function greeting() {
   const h = new Date().getHours();
@@ -45,7 +46,8 @@ function more() {
       ${navBtn('projects', 'פרויקטים', { cls: 'secondary', ico: '📋' })}
       ${navBtn('history', 'היסטוריה', { cls: 'secondary', ico: '📖' })}
       ${navBtn('cloud', 'סנכרון בין מכשירים', { cls: 'secondary', ico: '☁️' })}
-      ${navBtn('settings', 'הגדרות וגיבוי', { cls: 'secondary', ico: '⚙️' })}`,
+      ${navBtn('settings', 'הגדרות וגיבוי', { cls: 'secondary', ico: '⚙️' })}
+      <p class="muted center">גרסה ${APP_VERSION}</p>`,
   };
 }
 

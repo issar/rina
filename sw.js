@@ -19,8 +19,10 @@ self.addEventListener('activate', (e) => {
 
 self.addEventListener('fetch', (e) => {
   if (e.request.method !== 'GET' || !e.request.url.startsWith(self.location.origin)) return;
+  // no-cache: בודקים מול השרת בכל פעם (GitHub שומר קבצים בזיכרון הדפדפן 10 דקות),
+  // כדי שתיקון שפורסם יגיע לטלפון מיד ולא יתערבבו קבצים ישנים וחדשים
   e.respondWith(
-    fetch(e.request)
+    fetch(e.request, { cache: 'no-cache' })
       .then((res) => {
         const copy = res.clone();
         caches.open(CACHE).then((c) => c.put(e.request, copy));
