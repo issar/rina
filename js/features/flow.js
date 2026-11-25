@@ -5,9 +5,9 @@ import { go, goHome, render, clearAllDrafts } from '../core/router.js';
 import { btn, navBtn, card, checkRow, inputWithMic, esc, val, toast, ask } from '../core/ui.js';
 import { num } from '../core/util.js';
 import { openItemsCard, dangersCard, anomalyCard } from './widgets.js';
-import { firstStep, nextStep, progressOf } from '../domain/flow.js';
+import { firstStep, nextStep, progressOf, stepAfter } from '../domain/flow.js';
 import {
-  startVisit, toggleActivity, setPos, setDraft, setFueled, setAnomaly, setCheck,
+  startVisit, toggleActivity, setPos, setDraft, setFueled, setAnomaly, setCheck, checkAll,
   closeGroups, uncheckedCount, finishVisit,
 } from '../domain/visit.js';
 import { closeValve, openValve, isValveClosed, hasOpenItems } from '../domain/openItems.js';
@@ -17,6 +17,10 @@ import { isHoursDecrease } from '../domain/engine.js';
 
 const nextBtn = (label = 'המשך', opts = {}) =>
   btn('flowNext', label, { ico: '➜', ...opts, data: { ...(opts.data || {}) } });
+
+/** כפתור בתחתית כל רשימת סימון: מסמן את כל הרשימה וממשיך לשלב שאחריה */
+const checkAllBtn = (list) =>
+  `<div class="spacer"></div>${btn('flowCheckAll', 'סמן הכול והמשך', { cls: 'secondary', ico: '✓✓', data: { list } })}`;
 
 const progress = (p) => (p ? `<p class="progress">${p.current} מתוך ${p.total}</p>` : '');
 
@@ -103,7 +107,8 @@ const STEP_VIEWS = {
       title: `סגירת הסירה: ${esc(g.g)}`,
       html: `${progress(progressOf(S, pos))}
         ${g.items.map((x) => checkRow({ action: 'tick', data: { list: 'close', key: x.i }, text: x.t, done: S.visit.close[x.i] })).join('')}
-        ${nextBtn()}`,
+        ${nextBtn()}
+        ${checkAllBtn('close')}`,
     };
   },
 
@@ -181,7 +186,8 @@ function checkStep(S, pos, list, title) {
     title,
     html: `${progress(progressOf(S, pos))}
       <div class="step-item">${esc(text)}</div>
-      ${btn('flowCheck', 'בדקתי ✓', { cls: 'ok', data: { list, key: pos.i } })}`,
+      ${btn('flowCheck', 'בדקתי ✓', { cls: 'ok', data: { list, key: pos.i } })}
+      ${checkAllBtn(list)}`,
   };
 }
 
@@ -250,6 +256,15 @@ const actions = {
   },
   flowSkipHours() { setDraft(state(), 'hours', null); goNext(); },
   flowCheck(d) { setCheck(state(), d.list, Number(d.key), true); goNext(); },
+  flowCheckAll(d) {
+    const S = state();
+    checkAll(S, d.list);
+    const next = stepAfter(S, S.visit.pos.key);
+    if (!next) return;
+    setPos(S, next); save();
+    go('flow', next);
+    toast('הכול סומן');
+  },
   answerFuel(d) { setFueled(state(), d.v === 'yes'); goNext(); },
   answerAnomaly(d) { setAnomaly(state(), d.v === 'yes'); goNext(); },
 

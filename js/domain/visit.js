@@ -40,6 +40,12 @@ export function setCheck(S, list, index, value) {
   S.visit[list][index] = !!value;
 }
 
+/** "סמן הכול": מסמן את כל הסעיפים ברשימה (pre, post או close) */
+export function checkAll(S, list) {
+  if (!S.visit || !CHECK_LISTS.includes(list)) return;
+  for (let i = 0; i < S.lists[list].length; i++) S.visit[list][i] = true;
+}
+
 /** כמה סעיפים לא סומנו באזור אחד של רשימת הסגירה */
 export const uncheckedInGroup = (S, group) => group.items.filter((x) => !S.visit?.close?.[x.i]).length;
 

@@ -49,6 +49,12 @@ export function nextStep(S, pos) {
   return null;
 }
 
+/** השלב שאחרי כל המסכים של השלב הנוכחי (ל"סמן הכול והמשך") */
+export function stepAfter(S, key) {
+  const def = stepDef(key);
+  return nextStep(S, { key, i: countOf(S, def) - 1 });
+}
+
 /** מיקום בתוך שלב עם כמה מסכים: "2 מתוך 5" */
 export function progressOf(S, pos) {
   const def = stepDef(pos.key);

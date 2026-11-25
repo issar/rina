@@ -34,6 +34,14 @@ export function markServiceDone(S, id, hours = null, now = Date.now()) {
 }
 
 /** סימון בדיקה אחרי טיפול. מחזיר true כשכל הבדיקות הושלמו. */
+/** "סמן הכול" בבדיקות אחרי טיפול */
+export function checkAllDangers(S, now = Date.now()) {
+  const p = S.pendingDangers;
+  if (!p) return;
+  addLog(S, 'resolve', `נבדק אחרי ${p.name}: ${p.items.map((x) => x.text).join(', ')}`, now);
+  S.pendingDangers = null;
+}
+
 export function toggleDangerCheck(S, index, now = Date.now()) {
   const p = S.pendingDangers;
   if (!p || !p.items[index]) return false;

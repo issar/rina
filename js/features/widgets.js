@@ -18,7 +18,8 @@ export function dangersCard(S) {
   if (!d) return '';
   const when = happenedThisVisit(S, d.date) ? 'היום בוצע' : 'בפעם הקודמת';
   const rows = d.items.map((it, i) => checkRow({ action: 'dangerTick', data: { i }, text: it.text, done: it.ok })).join('');
-  return card('warn', `🔧 ${when}: ${esc(d.name)}`, `<p class="muted">${fmtDate(d.date)}. לבדוק לפני שמתחילים:</p>${rows}`);
+  const all = d.items.length > 1 ? btn('dangerCheckAll', 'סמן הכול', { cls: 'secondary small', ico: '✓✓' }) : '';
+  return card('warn', `🔧 ${when}: ${esc(d.name)}`, `<p class="muted">${fmtDate(d.date)}. לבדוק לפני שמתחילים:</p>${rows}${all}`);
 }
 
 export function anomalyCard(S) {

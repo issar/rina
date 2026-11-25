@@ -4,7 +4,7 @@ import { go, back, render } from '../core/router.js';
 import { state, save } from '../core/store.js';
 import { toast } from '../core/ui.js';
 import { resolveOpenItem } from '../domain/openItems.js';
-import { toggleDangerCheck } from '../domain/services.js';
+import { toggleDangerCheck, checkAllDangers } from '../domain/services.js';
 import { dismissAnomaly } from '../domain/visit.js';
 import { startDictation } from '../services/speech.js';
 
@@ -29,6 +29,11 @@ export default {
       const allDone = toggleDangerCheck(state(), Number(d.i));
       save(); render();
       if (allDone) toast('מצוין, כל הבדיקות אחרי הטיפול בוצעו');
+    },
+    dangerCheckAll() {
+      checkAllDangers(state());
+      save(); render();
+      toast('כל הבדיקות אחרי הטיפול סומנו');
     },
   },
 };
