@@ -16,12 +16,18 @@ function greeting() {
   return 'ערב טוב';
 }
 
+// תמונה אישית בראש מסך הבית בלבד. בשאר המסכים אין תמונה, כדי שהכפתורים והרשימות יישארו קריאים.
+const hero = () => `<div class="hero" aria-hidden="true">
+    <img src="img/hero.jpg" alt="">
+    <div class="hero-text"><span class="hero-hello">${greeting()}, יוסי!</span><span class="hero-boat">⛵ יאכטה רינה</span></div>
+  </div>`;
+
 function home() {
   const S = state();
   if (S.visit) {
     return {
       title: 'RINA ⛵',
-      html: `<p class="step-q">${greeting()}!<br>אתה באמצע ביקור בסירה.</p>
+      html: `${hero()}<p class="step-q">אתה באמצע ביקור בסירה.</p>
         ${btn('resumeVisit', 'ממשיכים מאיפה שעצרנו', { cls: 'ok', ico: '➜' })}
         ${btn('cancelVisit', 'לבטל את הביקור ולהתחיל מחדש', { cls: 'secondary small' })}`,
     };
@@ -31,7 +37,7 @@ function home() {
   const urgent = `${openItemsCard(S)}${anomalyCard(S)}${si && si.level !== 'good' ? engineCard(S) : ''}${fuelCard(S)}${si ? '' : engineCard(S)}`;
   return {
     title: 'RINA ⛵',
-    html: `<p class="step-q">${greeting()}!<br>מה עושים היום?</p>
+    html: `${hero()}<p class="step-q">מה עושים היום?</p>
       ${btn('startVisit', 'הגעתי לסירה', { ico: '⛵' })}
       ${navBtn('bring', `מתכונן בבית: מה להביא${S.bring.length ? ` (${S.bring.length})` : ''}`, { cls: 'secondary', ico: '🧳' })}
       ${urgent}
