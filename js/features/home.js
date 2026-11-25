@@ -4,6 +4,7 @@ import { state, save } from '../core/store.js';
 import { render, clearAllDrafts } from '../core/router.js';
 import { btn, navBtn, ask } from '../core/ui.js';
 import { cancelVisit } from '../domain/visit.js';
+import { resolveOpenItem } from '../domain/openItems.js';
 import { openItemsCard, anomalyCard, engineCard, fuelCard } from './widgets.js';
 import { serviceInfo } from '../domain/engine.js';
 import { APP_VERSION } from '../version.js';
@@ -18,12 +19,17 @@ function greeting() {
 
 // תמונה אישית בראש מסך הבית בלבד. בשאר המסכים אין תמונה, כדי שהכפתורים והרשימות יישארו קריאים.
 // מצב ברז יניקת מי הים מופיע על התמונה, כדי שיראו אותו מיד בלי לגלול
+// סגור: פס אדום עם "פתחתי". פתוח: לא מציגים כלום, חוץ מרגע אחרי "פתחתי" (פס ירוק שנעלם לאט)
+let justOpened = false;
 function valveBadge(S) {
   const v = S.open.find((o) => o.valve);
-  return v
-    ? `<div class="hero-valve closed" role="alert"><span>⛔ ברז יניקת מי ים סגור!</span>
-        ${btn('resolveOpen', 'פתחתי', { cls: 'ok small', data: { id: v.id } })}</div>`
-    : '<div class="hero-valve open"><span>✓ ברז יניקת מי ים פתוח</span></div>';
+  if (v) {
+    return `<div class="hero-valve closed" role="alert"><span>⛔ ברז יניקת מי ים סגור!</span>
+        ${btn('heroValveOpened', 'פתחתי', { cls: 'ok small', data: { id: v.id } })}</div>`;
+  }
+  if (!justOpened) return '';
+  justOpened = false;
+  return '<div class="hero-valve open fade-out"><span>✓ ברז יניקת מי ים פתוח</span></div>';
 }
 
 const hero = (S) => `<div class="hero">
@@ -75,6 +81,11 @@ function more() {
 }
 
 const actions = {
+  heroValveOpened(d) {
+    resolveOpenItem(state(), d.id);
+    justOpened = true;
+    save(); render();
+  },
   async cancelVisit() {
     if (!(await ask('לבטל את הביקור? מה שסומן בו לא יישמר.', { yes: 'כן, לבטל', no: 'לא, להמשיך בביקור', danger: true }))) return;
     cancelVisit(state());
