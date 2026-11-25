@@ -1,7 +1,7 @@
 // מסך הבית: ברכה, רק מה שדחוף, וכפתור אחד גדול להתחלה.
 // כל השאר (טיפולים, פרויקטים, היסטוריה, הגדרות) נמצא במסך "עוד".
 import { state, save } from '../core/store.js';
-import { render } from '../core/router.js';
+import { render, clearAllDrafts } from '../core/router.js';
 import { btn, navBtn, ask } from '../core/ui.js';
 import { cancelVisit } from '../domain/visit.js';
 import { openItemsCard, anomalyCard, engineCard, fuelCard } from './widgets.js';
@@ -19,7 +19,7 @@ function home() {
   const S = state();
   if (S.visit) {
     return {
-      title: 'רינה ⛵',
+      title: 'RINA ⛵',
       html: `<p class="step-q">${greeting()}!<br>אתה באמצע ביקור בסירה.</p>
         ${btn('resumeVisit', 'ממשיכים מאיפה שעצרנו', { cls: 'ok', ico: '➜' })}
         ${btn('cancelVisit', 'לבטל את הביקור ולהתחיל מחדש', { cls: 'secondary small' })}`,
@@ -29,7 +29,7 @@ function home() {
   // במסך הבית מציגים רק מה שדורש תשומת לב
   const urgent = `${openItemsCard(S)}${anomalyCard(S)}${si && si.level !== 'good' ? engineCard(S) : ''}${fuelCard(S)}${si ? '' : engineCard(S)}`;
   return {
-    title: 'רינה ⛵',
+    title: 'RINA ⛵',
     html: `<p class="step-q">${greeting()}!<br>מה עושים היום?</p>
       ${btn('startVisit', 'הגעתי לסירה', { ico: '⛵' })}
       ${navBtn('bring', `מתכונן בבית: מה להביא${S.bring.length ? ` (${S.bring.length})` : ''}`, { cls: 'secondary', ico: '🧳' })}
@@ -53,6 +53,7 @@ const actions = {
   async cancelVisit() {
     if (!(await ask('לבטל את הביקור? מה שסומן בו לא יישמר.', { yes: 'כן, לבטל', no: 'לא, להמשיך בביקור', danger: true }))) return;
     cancelVisit(state());
+    clearAllDrafts();
     save(); render();
   },
 };

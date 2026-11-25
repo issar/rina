@@ -44,4 +44,18 @@ export function resetAll() {
   save();
 }
 
+// טיוטות: טקסט שהוקלד ועוד לא נשמר, לפי מסך. נשמר בטלפון בלבד (לא עולה לענן),
+// כדי שלחיצה בטעות על "חזרה" או סגירת האפליקציה לא ימחקו אותו.
+const DRAFTS = 'rina-drafts';
+let drafts = null;
+function draftsObj() {
+  if (!drafts) { try { drafts = JSON.parse(localStorage.getItem(DRAFTS)) || {}; } catch { drafts = {}; } }
+  return drafts;
+}
+function writeDrafts() { try { localStorage.setItem(DRAFTS, JSON.stringify(drafts)); } catch {} }
+export function getDraft(key) { return draftsObj()[key] || null; }
+export function setDraftField(key, id, value) { const d = draftsObj(); (d[key] ||= {})[id] = value; writeDrafts(); }
+export function clearDraft(key) { const d = draftsObj(); if (d[key]) { delete d[key]; writeDrafts(); } }
+export function clearAllDrafts() { drafts = {}; writeDrafts(); }
+
 export function exportJson() { return JSON.stringify(current, null, 1); }

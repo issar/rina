@@ -20,6 +20,7 @@ export function startDictation(field, button) {
     let txt = '';
     for (const r of ev.results) txt += r[0].transcript;
     field.value = base + txt;
+    field.dispatchEvent(new Event('input', { bubbles: true })); // כדי שגם הקלטה תישמר כטיוטה
   };
   rec.onerror = (ev) => {
     const msg = {

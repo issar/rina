@@ -1,7 +1,7 @@
 // מסך כללי להזנת טקסט חופשי (הקלדה או הקלטה).
 // כדי להוסיף סוג הזנה חדש: מוסיפים רשומה ל-MODES עם title, ph, save ו-apply.
 import { state, save } from '../core/store.js';
-import { back } from '../core/router.js';
+import { back, clearDraft } from '../core/router.js';
 import { btn, inputWithMic, val, toast } from '../core/ui.js';
 import { addLog } from '../domain/log.js';
 import { addOpenItem } from '../domain/openItems.js';
@@ -39,6 +39,7 @@ const actions = {
     const m = MODES[d.mode];
     m.apply(state(), text, d);
     save();
+    clearDraft();
     toast(m.done);
     back();
   },

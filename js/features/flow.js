@@ -1,7 +1,7 @@
 // המסלול המודרך של ביקור: מסך אחד לכל שלב, עם כפתור אחד ברור להמשך.
 // סדר השלבים ומתי כל אחד מופיע: domain/flow.js. כאן רק איך כל שלב נראה.
 import { state, save } from '../core/store.js';
-import { go, goHome, render } from '../core/router.js';
+import { go, goHome, render, clearAllDrafts } from '../core/router.js';
 import { btn, navBtn, card, checkRow, inputWithMic, esc, val, toast, ask } from '../core/ui.js';
 import { num } from '../core/util.js';
 import { openItemsCard, dangersCard, anomalyCard } from './widgets.js';
@@ -54,9 +54,10 @@ const STEP_VIEWS = {
   work: (S) => ({
     title: 'עבודה על הסירה',
     html: `<p class="muted">לוחצים רק כשקורה משהו. בסוף העבודה לוחצים על הכפתור הירוק.</p>
+      <p class="muted">ברז יניקת מי ים (לוחצים כשסוגרים או פותחים):</p>
       ${isValveClosed(S)
-        ? btn('valveOpen', 'פתחתי את ברז יניקת מי הים', { cls: 'ok', ico: '🚰' })
-        : btn('valveClose', 'סגרתי ברז יניקת מי ים', { cls: 'danger', ico: '🚰' })}
+        ? btn('valveToggle', 'ברז יניקת מי ים: סגור', { cls: 'danger', ico: '⛔' })
+        : btn('valveToggle', 'ברז יניקת מי ים: פתוח', { cls: 'ok', ico: '✓' })}
       ${navBtn('input', 'תיקנתי משהו', { cls: 'secondary', ico: '🔧', data: { mode: 'fix' } })}
       ${navBtn('services', 'ביצעתי טיפול', { cls: 'secondary', ico: '🛠' })}
       ${navBtn('input', 'השארתי משהו פתוח / מפורק', { cls: 'secondary', ico: '⚠️', data: { mode: 'open' } })}
@@ -220,6 +221,7 @@ const actions = {
   startVisit() {
     const S = state();
     startVisit(S);
+    clearAllDrafts(); // ביקור חדש מתחיל בלי טקסט מהביקור הקודם
     const first = firstStep(S);
     setPos(S, first);
     save();
@@ -257,14 +259,19 @@ const actions = {
     setCheck(S, d.list, Number(d.key), !S.visit[d.list][d.key]);
     save(); render();
   },
-  valveClose() { closeValve(state()); save(); render(); toast('נרשם: הברז סגור. אזכיר לך לפתוח'); },
-  valveOpen() { openValve(state()); save(); render(); toast('הברז מסומן כפתוח'); },
+  valveToggle() {
+    const S = state();
+    if (isValveClosed(S)) { openValve(S); toast('הברז מסומן כפתוח'); }
+    else { closeValve(S); toast('נרשם: הברז סגור. אזכיר לך לפתוח'); }
+    save(); render();
+  },
 
   flowFinish() {
     const S = state();
     const d = S.visit.draft || {};
     finishVisit(S, { hours: d.hours ?? null, next: d.next || '', summary: d.summary || '' });
     save();
+    clearAllDrafts();
     goHome();
     toast('הביקור נשמר. להתראות!');
   },

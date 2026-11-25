@@ -1,6 +1,6 @@
 // טיפולים: רשימת סוגי טיפול, הגדרה ועריכה, וסימון טיפול שבוצע.
 import { state, save } from '../core/store.js';
-import { back } from '../core/router.js';
+import { back, clearDraft } from '../core/router.js';
 import { btn, navBtn, card, checkRow, esc, val, toast, ask } from '../core/ui.js';
 import { num, lines } from '../core/util.js';
 import { serviceInfo } from '../domain/engine.js';
@@ -74,7 +74,7 @@ const actions = {
       dangers: lines(val('stDan')),
       engine: document.querySelector('#stEngineWrap .check').classList.contains('done'),
     });
-    save(); back(); toast('הטיפול נשמר');
+    save(); clearDraft(); back(); toast('הטיפול נשמר');
   },
   async deleteService(d) {
     if (!(await ask('למחוק את סוג הטיפול?', { yes: 'כן, למחוק', danger: true }))) return;
@@ -83,7 +83,7 @@ const actions = {
   },
   doService(d) {
     const t = markServiceDone(state(), d.id, num(val('sdHours')));
-    save(); back();
+    save(); clearDraft(); back();
     toast(t && t.dangers.length ? 'נשמר. אזכיר לך מה לבדוק' : 'הטיפול נשמר');
   },
 };

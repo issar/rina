@@ -1,6 +1,6 @@
 // הגדרות: שעות מנוע, ספי דלק, עריכת רשימות, גיבוי ושחזור.
 import { state, save, replaceAll, exportJson, resetAll } from '../core/store.js';
-import { goHome } from '../core/router.js';
+import { goHome, clearDraft, clearAllDrafts } from '../core/router.js';
 import { btn, esc, val, toast, ask } from '../core/ui.js';
 import { num } from '../core/util.js';
 import { closeListToText, setLists } from '../domain/lists.js';
@@ -53,12 +53,13 @@ const actions = {
     S.settings.fuelSoft = num(val('setSoft')) ?? 75;
     S.settings.fuelHard = num(val('setHard')) ?? 110;
     setLists(S, { pre: val('setPre'), post: val('setPost'), close: val('setClose') });
-    save(); toast('נשמר');
+    save(); clearDraft(); toast('נשמר');
   },
   async resetAll() {
     if (!(await ask('למחוק את כל הנתונים ולהתחיל מאפס? אי אפשר לבטל את זה.', { yes: 'כן, למחוק הכול', danger: true }))) return;
     await sync.archiveCurrent('before-reset'); // עותק בענן, למקרה שהאיפוס היה טעות
     resetAll();
+    clearAllDrafts();
     goHome(); toast('הכול נמחק. מתחילים מחדש');
   },
   exportData() {
@@ -80,6 +81,7 @@ const actions = {
         if (!(await ask('השחזור יחליף את כל הנתונים הנוכחיים. להמשיך?', { yes: 'כן, לשחזר', danger: true }))) return;
         await sync.archiveCurrent('before-import');
         replaceAll(data);
+        clearAllDrafts();
         goHome(); toast('הנתונים שוחזרו');
       } catch (e) { toast('הקובץ לא תקין'); }
     };
