@@ -49,6 +49,17 @@ export function nextStep(S, pos) {
   return null;
 }
 
+/** השלב הקודם ל-pos (לכפתור "תיקון"). null אם זה השלב הראשון. */
+export function prevStep(S, pos) {
+  if (!pos) return null;
+  if ((pos.i ?? 0) > 0) return { key: pos.key, i: pos.i - 1 };
+  for (let k = indexOf(pos.key) - 1; k >= 0; k--) {
+    const def = STEPS[k];
+    if (isActive(S, def)) return { key: def.key, i: countOf(S, def) - 1 };
+  }
+  return null;
+}
+
 /** השלב שאחרי כל המסכים של השלב הנוכחי (ל"סמן הכול והמשך") */
 export function stepAfter(S, key) {
   const def = stepDef(key);

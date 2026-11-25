@@ -27,9 +27,14 @@ function home() {
   if (S.visit) {
     return {
       title: 'RINA ⛵',
-      html: `${hero()}<p class="step-q">אתה באמצע ביקור בסירה.</p>
-        ${btn('resumeVisit', 'ממשיכים מאיפה שעצרנו', { cls: 'ok', ico: '➜' })}
-        ${btn('cancelVisit', 'לבטל את הביקור ולהתחיל מחדש', { cls: 'secondary small' })}`,
+      html: S.visit.pos?.key === 'sailing'
+        ? `${hero()}<p class="step-q">אתה באמצע הפלגה.</p>
+          ${btn('resumeVisit', 'חזרה להפלגה', { cls: 'ok', ico: '⛵' })}
+          ${navBtn('more', 'עוד אפשרויות (טיפולים, היסטוריה...)', { cls: 'secondary small', ico: '☰' })}`
+        : `${hero()}<p class="step-q">אתה באמצע ביקור בסירה.</p>
+          ${btn('resumeVisit', 'ממשיכים מאיפה שעצרנו', { cls: 'ok', ico: '➜' })}
+          ${navBtn('more', 'עוד אפשרויות', { cls: 'secondary small', ico: '☰' })}
+          ${btn('cancelVisit', 'לבטל את הביקור ולהתחיל מחדש', { cls: 'secondary small' })}`,
     };
   }
   const si = serviceInfo(S);

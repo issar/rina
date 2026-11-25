@@ -5,7 +5,7 @@ import { go, goHome, render, clearAllDrafts } from '../core/router.js';
 import { btn, navBtn, card, checkRow, inputWithMic, esc, val, toast, ask } from '../core/ui.js';
 import { num } from '../core/util.js';
 import { openItemsCard, dangersCard, anomalyCard } from './widgets.js';
-import { firstStep, nextStep, progressOf, stepAfter } from '../domain/flow.js';
+import { firstStep, nextStep, prevStep, progressOf, stepAfter } from '../domain/flow.js';
 import {
   startVisit, toggleActivity, setPos, setDraft, setFueled, setAnomaly, setCheck, checkAll,
   closeGroups, uncheckedCount, finishVisit,
@@ -115,7 +115,10 @@ const STEP_VIEWS = {
       <p class="sail-title">הפלגה נעימה!</p>
       <p class="sail-sub">כל הבדיקות עברו. המסך הזה מחכה לך עד שתחזור.</p>
       <div class="spacer"></div>
-      ${nextBtn('חזרתי לנמל', { cls: 'danger', ico: '⚓' })}`,
+      ${nextBtn('חזרתי לנמל', { cls: 'danger', ico: '⚓' })}
+      ${btn('flowPrev', 'תיקון (חזרה אחורה)', { cls: 'secondary small', ico: '↩' })}`,
+    // "חזרה" למעלה מוביל לבית (לבדוק טיפולים וכו'), ומשם "חזרה להפלגה" מחזיר לכאן
+    backHome: true,
   }),
 
   openCheck: (S) => ({
@@ -229,6 +232,7 @@ function flow(params) {
   return {
     title: view.title,
     html: `<div class="step" data-key="${pos.key}">${view.html}</div>`,
+    backHome: view.backHome,
     after: () => {
       for (const [id, v] of Object.entries(view.fill || {})) {
         const el = document.getElementById(id);
@@ -282,6 +286,13 @@ const actions = {
   },
   flowSkipHours() { setDraft(state(), 'hours', null); goNext(); },
   flowCheck(d) { setCheck(state(), d.list, Number(d.key), true); goNext(); },
+  flowPrev() {
+    const S = state();
+    const prev = prevStep(S, S.visit.pos);
+    if (!prev) return;
+    setPos(S, prev); save();
+    go('flow', prev);
+  },
   flowCheckAll(d) {
     const S = state();
     checkAll(S, d.list);

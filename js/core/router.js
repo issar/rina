@@ -18,7 +18,8 @@ export function registerScreens(map) {
 
 export function initRouter({ app, title, back }) {
   els = { app, title, back };
-  back.addEventListener('click', () => history.back());
+  // מסך יכול לבקש ש"חזרה" למעלה יוביל לבית (backHome), למשל מסך ההפלגה
+  back.addEventListener('click', () => (backHome ? goHome() : history.back()));
   const keepDraft = (e) => {
     const el = e.target;
     if (!el.id || !el.isConnected || !el.matches('input, textarea') || el.type === 'password' || el.type === 'file') return;
@@ -65,6 +66,7 @@ export function render({ keepFields = true } = {}) {
   // רענון של אותו מסך (למשל אחרי סימון) לא מוחק טקסט שכבר הוקלד
   if (!keepFields) clearDraftKey(draftKey(cur));
   const keep = keepFields && cur === lastRendered ? collectFields(els.app) : {};
+  backHome = !!out.backHome;
   els.title.textContent = out.title;
   els.back.hidden = stack.length <= 1;
   els.app.innerHTML = out.html;
@@ -75,6 +77,7 @@ export function render({ keepFields = true } = {}) {
 }
 
 let lastRendered = null;
+let backHome = false;
 
 function collectFields(root) {
   const vals = {};
