@@ -44,6 +44,7 @@ function more() {
     html: `${navBtn('services', 'טיפולים', { cls: 'secondary', ico: '🛠' })}
       ${navBtn('projects', 'פרויקטים', { cls: 'secondary', ico: '📋' })}
       ${navBtn('history', 'היסטוריה', { cls: 'secondary', ico: '📖' })}
+      ${navBtn('cloud', 'סנכרון בין מכשירים', { cls: 'secondary', ico: '☁️' })}
       ${navBtn('settings', 'הגדרות וגיבוי', { cls: 'secondary', ico: '⚙️' })}`,
   };
 }

@@ -33,6 +33,9 @@ export function goHome() {
 
 export const back = () => history.back();
 
+/** שם המסך שמוצג עכשיו */
+export const currentScreen = () => stack[stack.length - 1].name;
+
 /** keepFields: false כשהפעולה כבר השתמשה בטקסט שהוקלד ורוצים שדות ריקים */
 export function render({ keepFields = true } = {}) {
   const cur = stack[stack.length - 1];

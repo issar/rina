@@ -6,7 +6,11 @@ const KEY = 'rina-v1';
 let current = null;
 let onError = () => {};
 
+let onSave = () => {};
+
 export function setErrorHandler(fn) { onError = fn; }
+/** מי שצריך לדעת על כל שמירה (הסנכרון לענן) */
+export function setSaveListener(fn) { onSave = fn; }
 
 export function load() {
   try {
@@ -22,14 +26,16 @@ export function load() {
 /** הנתונים הנוכחיים. פעולות משנות אותם ואז קוראות ל-save(). */
 export function state() { return current; }
 
-export function save() {
+/** silent: שמירה שבאה מהענן, ולכן לא צריך לשלוח אותה בחזרה */
+export function save({ silent = false } = {}) {
   try { localStorage.setItem(KEY, JSON.stringify(current)); }
   catch (e) { onError('שגיאה בשמירה! כדאי לשמור קובץ גיבוי'); }
+  if (!silent) onSave();
 }
 
-export function replaceAll(data) {
+export function replaceAll(data, { silent = false } = {}) {
   current = migrate(data);
-  save();
+  save({ silent });
 }
 
 /** מחיקת כל הנתונים וחזרה להתחלה */

@@ -5,6 +5,7 @@ import { btn, esc, val, toast, ask } from '../core/ui.js';
 import { num } from '../core/util.js';
 import { closeListToText, setLists } from '../domain/lists.js';
 import { setHours } from '../domain/engine.js';
+import { sync } from '../services/syncInstance.js';
 
 const numField = (id, label, value) =>
   `<label class="field" for="${id}">${label}</label><input type="number" inputmode="decimal" id="${id}" value="${value ?? ''}">`;
@@ -56,6 +57,7 @@ const actions = {
   },
   async resetAll() {
     if (!(await ask('למחוק את כל הנתונים ולהתחיל מאפס? אי אפשר לבטל את זה.', { yes: 'כן, למחוק הכול', danger: true }))) return;
+    await sync.archiveCurrent('before-reset'); // עותק בענן, למקרה שהאיפוס היה טעות
     resetAll();
     goHome(); toast('הכול נמחק. מתחילים מחדש');
   },
@@ -76,6 +78,7 @@ const actions = {
         const data = JSON.parse(await file.text());
         if (!data || typeof data.v !== 'number') throw new Error('bad');
         if (!(await ask('השחזור יחליף את כל הנתונים הנוכחיים. להמשיך?', { yes: 'כן, לשחזר', danger: true }))) return;
+        await sync.archiveCurrent('before-import');
         replaceAll(data);
         goHome(); toast('הנתונים שוחזרו');
       } catch (e) { toast('הקובץ לא תקין'); }
